@@ -48,7 +48,7 @@ function App() {
   const API_URL = import.meta.env.VITE_API_LINK;
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(API_URL)
+    
   
     try {
       let response = await axios.post(
@@ -59,8 +59,15 @@ function App() {
             bathroom: selectedBathroom,
             budget: selectedBudget,
             accommodation: accommodation
+          },
+          
+          
+            headers: {
+              "Content-Type": "application/json",
+            },
+            withCredentials: false, // ✅ Avoids sending unnecessary credentials
           }
-        }
+        
       );
   
       console.log("API Response:", response.data);
