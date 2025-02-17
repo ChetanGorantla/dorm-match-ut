@@ -46,37 +46,35 @@ function App() {
   }
 
   const API_URL = import.meta.env.VITE_API_LINK;
-  const handleSubmit = async (e) => {
+
+const handleSubmit = async (e) => {
     e.preventDefault();
-    
-  
+
     try {
-      let response = await axios.post(
-        API_URL + '/ut-prediction', 
-        {
-          params: {
-            occupants: selectedOccupants,
-            bathroom: selectedBathroom,
-            budget: selectedBudget,
-            accommodation: accommodation
-          },
-          
-          
-            headers: {
-              "Content-Type": "application/json",
+        let response = await axios.post(
+            `${API_URL}/ut-prediction`,  // ✅ Correct URL formatting
+            {  // ✅ Send body data properly
+                occupants: selectedOccupants,
+                bathroom: selectedBathroom,
+                budget: selectedBudget,
+                accommodation: accommodation
             },
-            withCredentials: false, // ✅ Avoids sending unnecessary credentials
-          }
-        
-      );
-  
-      console.log("API Response:", response.data);
-      setTop3(response.data.top3);
-      setTop10(response.data.top10);
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                withCredentials: false, // ✅ Avoids cross-origin credential issues
+            }
+        );
+
+        console.log("API Response:", response.data);
+        setTop3(response.data.top3);
+        setTop10(response.data.top10);
     } catch (error) {
-      console.error("Error sending data to API:", error);
+        console.error("Error sending data to API:", error);
     }
-  };
+};
+
   
   
   
