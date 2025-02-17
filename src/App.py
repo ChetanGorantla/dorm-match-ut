@@ -7,6 +7,7 @@ logging.basicConfig(level=logging.DEBUG)
 app = Flask(__name__)
 
 
+# ✅ Allow requests from React frontend (localhost:5173 & deployed frontend)
 CORS(app, resources={r"/*": {"origins": ["http://localhost:5173", "https://your-frontend.com"], 
                              "methods": ["GET", "POST", "OPTIONS"], 
                              "allow_headers": ["Content-Type", "Authorization"],
