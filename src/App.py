@@ -7,14 +7,17 @@ logging.basicConfig(level=logging.DEBUG)
 app = Flask(__name__)
 
 
-CORS(app, resources={r"/*": {"origins": ["http://localhost:4200", "http://localhost:5173"], "methods": ["GET", "POST"], "allow_headers": ["Content-Type", "Authorization"]}})
+CORS(app, resources={r"/*": {"origins": ["http://localhost:5173", "https://your-frontend.com"], 
+                             "methods": ["GET", "POST", "OPTIONS"], 
+                             "allow_headers": ["Content-Type", "Authorization"],
+                             "supports_credentials": True}})
 
 @app.before_request
 def handle_options():
-    """ ✅ Handle CORS Preflight Requests """
+    """ ✅ Handle Preflight Requests (OPTIONS) """
     if request.method == "OPTIONS":
         response = Response()
-        response.headers["Access-Control-Allow-Origin"] = "true"
+        response.headers["Access-Control-Allow-Origin"] = request.headers.get("Origin", "*")
         response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
         response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
         response.headers["Access-Control-Allow-Credentials"] = "true"
