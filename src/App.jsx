@@ -6,126 +6,139 @@ import SegmentedSlider from './SegmentedSlider'
 import TrueSlider from './TrueSlider'
 import LongTextInput from './LongTextInput'
 import axios from 'axios';
-
-
+import DormResults from './results'
 
 function App() {
-  const [count, setCount] = useState(0)
-  const [mod, setMod] = useState(0)
-  const [selectedOccupants, updateOccupants] = useState(1)
-  const occupantList = [1,2,3,4]
-  const [selectedBathroom, updateBathroom] = useState("Community Bathroom")
-  const [selectedBudget, updateBudget] = useState(10000)
-  const [accommodation, setAccommodation] = useState("")
+  const [selectedOccupants, updateOccupants] = useState(1);
+  const [selectedBathroom, updateBathroom] = useState("Community Bathroom");
+  const [selectedBudget, updateBudget] = useState(20000);
+  const [accommodation, setAccommodation] = useState("");
+  
+  const [top3, setTop3] = useState(null);
+  const [top10, setTop10] = useState(null);
+  const [loading, setLoading] = useState(false);  // ✅ Loading state
 
-  const [top3, setTop3] = useState(null)
-  const [top10, setTop10] = useState(null)
+  const API_URL = "http://127.0.0.1:8000";  // ✅ Local FastAPI server
 
-  const handleOccupantChange = (event) => {
-    updateOccupants(event.target.value)
-  }
-  const handleBathroomChange = (event) => {
-    updateBathroom(event.target.value)
-  }
-  const handleBudgetChange = (e) => {
-    let currVal = e.target.value;
+  // Handles the change in Number of Occupants slider
+const handleOccupantChange = (event) => {
+  updateOccupants(Number(event.target.value)); // Convert to number
+};
 
-    // If input is empty, set state to an empty string
-    if (currVal === "0") {
+// Handles the change in Type of Bathroom dropdown
+const handleBathroomChange = (event) => {
+  updateBathroom(event.target.value);
+};
+
+// Handles the change in Budget input
+const handleBudgetChange = (e) => {
+  let currVal = e.target.value;
+
+  // If input is empty, set state to an empty string
+  if (currVal === "0") {
       updateBudget("");
-      e.target.value = ""
-    } 
-    // Otherwise, parse the number
-    else if (!isNaN(currVal)) {
+      e.target.value = "";
+  } 
+  // Otherwise, parse the number and ensure it's within limits
+  else if (!isNaN(currVal)) {
       let newValue = Number(e.target.value);
-        if (newValue >= 0 && newValue <= 1000000){
-            updateBudget(newValue);
-        }
-    }
-    
-  }
-
-const API_URL = import.meta.env.VITE_API_LINK;
-
-const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  try {
-      let response = await axios.post(
-          `${API_URL}/ut-prediction`,  // ✅ FastAPI endpoint
-          { 
-              occupants: selectedOccupants,
-              bathroom: selectedBathroom,
-              budget: selectedBudget,
-              accommodation: accommodation
-          },
-          {
-              headers: { "Content-Type": "application/json" },
-              withCredentials: false,  // ✅ FastAPI does not need credentials
-          }
-      );
-
-      console.log("API Response:", response.data);
-      setTop3(response.data.top3);
-      setTop10(response.data.top10);
-  } catch (error) {
-      console.error("Error sending data to API:", error);
+      if (newValue >= 0 && newValue <= 1000000) {
+          updateBudget(newValue);
+      }
   }
 };
 
-  
-  
-  
+// Handles the change in Long Text Input (Accommodations)
+const handleAccommodationChange = (event) => {
+  setAccommodation(event.target.value);
+};
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true); // ✅ Show "Finding a dorm for you..."
+    setTop3(null);
+    setTop10(null);
+
+    const requestData = {
+        first: selectedOccupants,
+        second: selectedBathroom,
+        third: selectedBudget,
+        fourth: accommodation
+    };
+
+    fetch("http://localhost:5000/api/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestData)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();  // Convert to JSON
+    })
+    .then(data => {
+        console.log("Response from server:", data);
+
+        let t3 = data.received.top3;
+        let t10 = data.received.top10;
+
+        // Handle cases where the response is None or empty
+        const parsedTop3 = t3 && t3 !== "None" ? JSON.parse(t3) : [];
+        const parsedTop10 = t10 && t10 !== "None" ? JSON.parse(t10) : [];
+
+        setTop3(parsedTop3);
+        setTop10(parsedTop10);
+    })
+    .catch(error => console.error("Error:", error.message))
+    .finally(() => setLoading(false)); // ✅ Stop loading after data is received
+  };
+
   return (
     <>
-      <div style = {{flex:1, display: "flex", flexDirection: "column"
-      }}>
+      <a href="https://github.com/your-repo" target="_blank" rel="noopener noreferrer" className="github-link">
+          <img src="https://cdn-icons-png.flaticon.com/256/25/25231.png" alt="GitHub" className="github-icon" />
+      </a>
 
+      <div className="header-container">
+          <div className="header-content">
+              <h1 className="main-title">Dorm Match.</h1>
+              <p className="subtitle">
+                  Find your perfect dorm at UT Austin in <span className="highlight-text">seconds</span>
+              </p>
+          </div>
+      </div>
+
+      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
         
-        <div className="card">
-          <button onClick={() => setCount((count) => count + 1)}>
-            count is {count}
-          </button>
-          
-          <button onClick={() => setCount(count + 1)}>Clicked {count} times</button>
-          
-        </div>
-          <div style = {{display:"flex", justifyContent:"center", alignItems:"center"}}>
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
             {/* Left Side */}
-            <div style={{
-              flex: 1,
-              display: "flex",
-              flexDirection: "column",
-            }}>
+            <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
               <div>
-                <div>
-                  <div style={{ display: "flex", justifyContent: "center", alignItems:"center", marginTop: "0px"}}>
-                    Number of Occupants
-                  </div>
-                  <SegmentedSlider value = {selectedOccupants} setValue = {updateOccupants}/>
+                <div style={{ display: "flex", justifyContent: "center", alignItems:"center", marginTop: "0px" }}>
+                  Number of Occupants
                 </div>
-                
+                <SegmentedSlider value={selectedOccupants} setValue={updateOccupants}/>
               </div>
+              
               <div>
                 <label htmlFor="dropdown">Type of Bathroom</label>
-                <select id = "dropdown" value = {selectedBathroom} onChange = {handleBathroomChange} 
-                  style = {{marginLeft:"10px"}}>
-                  <option value = "Community Bathroom">Community Bathroom</option>
-                  <option value = "One Private">One Private</option>
-                  <option value = "One Connecting">One Connecting</option>
-                  <option value = "Two Private">Two Private</option>
+                <select id="dropdown" value={selectedBathroom} onChange={handleBathroomChange} style={{ marginLeft:"10px" }}>
+                  <option value="Community Bathroom">Community Bathroom</option>
+                  <option value="One Private">One Private</option>
+                  <option value="One Connecting">One Connecting</option>
+                  <option value="Two Private">Two Private</option>
                 </select>
               </div>
+
               <div>
-                  <div style={{ display: "flex", justifyContent: "center", alignItems:"center", marginTop: "10px"}}>
-                    Budget
-                    <input
-                    type = "text"
-                    value = {selectedBudget}
-                    onChange = {handleBudgetChange}
-                    
+                <div style={{ display: "flex", justifyContent: "center", alignItems:"center", marginTop: "10px"}}>
+                  Budget
+                  <input
+                    type="text"
+                    value={selectedBudget}
+                    onChange={handleBudgetChange}
                     style={{
-                      
                       marginLeft: "10px",
                       textAlign: "center",
                       background: "white",
@@ -133,38 +146,59 @@ const handleSubmit = async (e) => {
                       borderRadius: "4px",
                       fontSize: "14px",
                       color:"black",
-                      
-                      
                     }}
-                    />
-                  </div>
-                  
+                  />
+                </div>
               </div>
             </div>
+
             {/* Right Side */}
-            <div style={{
-              flex: 1,
-              display: "flex",
-              flexDirection: "column",
-            }}>
-              <div>
-                <LongTextInput text = {accommodation} setText = {setAccommodation}/>
-              </div>
+            <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+              <LongTextInput text={accommodation} setText={setAccommodation}/>
             </div>
         </div>
 
         {/* Match Me Button */}
         <button 
-        onClick = {handleSubmit}
-        style = {{
-          minWidth:"10px"
-        }}>
-           - match me! -
+        onClick={handleSubmit}
+        className="example-button"
+        style={{ minWidth:"10px" }}>
+           Match me!
         </button>
+
+        {/* Display Messages & Results */}
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", marginTop: "20px" }}>
+          <div style={{ color: "#323D49" }}> {/* Apply dark blue-black color */}
+
+            {/* Loading Message */}
+            {loading && (
+                <p style={{ color: "#323D49", fontWeight: "bold", fontSize: "18px" }}>
+                    Finding a dorm for you...
+                </p>
+            )}
+
+            {/* No Results Found Message */}
+            {!loading && top3 !== null && top3.length === 0 && (
+                <p style={{ color: "#323D49", fontWeight: "bold", fontSize: "18px" }}>
+                    We couldn't find a dorm that fits your needs. Please try entering different inputs.
+                </p>
+            )}
+
+            </div>
+
+          
+          {/* Display Dorm Results When Available */}
+          {!loading && top3 && top3.length > 0 && <DormResults top3={top3} top10={top10} />}
+        
+        </div>
       </div>
-      
+      <footer className="footer">
+          <p>Results are generated by a ranking system that rates each dorm relative to your needs.</p>
+          <p>Ratings may vary per person. Please refer to the official UT housing website for more details.</p>
+      </footer>
+
     </>
-  )
+  );
 }
 
-export default App
+export default App;

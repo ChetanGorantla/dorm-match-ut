@@ -1,44 +1,33 @@
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+from utaustin import ut_prediction
 
-app = FastAPI()
+app = Flask(__name__)
+CORS(app)  # Enable CORS for frontend access
 
-# ✅ Allow frontend requests from React (Vite) and deployed frontend
-origins = [
-    "http://localhost:5173",  # Local React development
-    "https://your-deployed-frontend.com"  # Deployed React app
-]
+# Ensure this route handles both GET and POST
+@app.route('/api/data', methods=['GET', 'POST'])
+def handle_data():
+    if request.method == 'POST':
+        data = request.get_json()  # Extract JSON data from request
+        #occupants = data.get(occupants)
+        #bathroom = data.get(bathroom)
+        #budget = data.get(budget)
+        #accommodations = data.get(accommodations)
+        #print("Received data:", occupants, bathroom, budget, accommodations)  # Debugging
+        occupants = data['first']
+        bathroom = data['second']
+        budget = data['third']
+        accommodations = data['fourth']
+        #top3 = "a"
+        #top10 = "b"
+        top3, top10 = ut_prediction(occupants, bathroom, budget, accommodations)
+        print(type(top3))
+        return jsonify({"message": "Data received", "received": {"top3": top3, "top10": top10}}), 200
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,  # ✅ Allows your frontend
-    allow_credentials=True,
-    allow_methods=["*"],  # ✅ Allows GET, POST, etc.
-    allow_headers=["*"],  # ✅ Allows Content-Type, Authorization, etc.
-)
 
-# ✅ Define expected input format using Pydantic
-class PredictionRequest(BaseModel):
-    occupants: int
-    bathroom: str
-    budget: int
-    accommodation: str
+    # Handle GET request if needed
+    return jsonify({"message": "Send a POST request with data"}), 200
 
-@app.get("/")
-async def root():
-    return {"message": "FastAPI is running!"}
-
-@app.post("/ut-prediction")
-async def predict(data: PredictionRequest):
-    """ Mock function to return dorm predictions. """
-    if data.occupants < 1:
-        raise HTTPException(status_code=400, detail="Invalid number of occupants.")
-
-    return {
-        "top3": ["Dorm A", "Dorm B", "Dorm C"],
-        "top10": ["Dorm D", "Dorm E", "Dorm F"]
-    }
-
-# ✅ Run FastAPI locally with:
-# uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+if __name__ == '__main__':
+    app.run(debug=True)

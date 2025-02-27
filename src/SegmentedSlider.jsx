@@ -1,4 +1,5 @@
 import { useState } from "react";
+import './App.css'
 
 export default function SegmentedSlider({ value, setValue }) { // Use props here
   const steps = [1, 2, 3, 4]; // Define segment values
@@ -17,7 +18,7 @@ export default function SegmentedSlider({ value, setValue }) { // Use props here
           position: "absolute",
           top: "-30px",
           left: getThumbPosition(),
-          background: "blue",
+          background: "#323D49",
           color: "white",
           padding: "4px 8px",
           borderRadius: "4px",

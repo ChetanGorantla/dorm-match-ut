@@ -4,7 +4,8 @@ def ut_prediction(user_occupants, user_bathroom, user_price, user_amenities):
     import requests
     import re
     from regex import extract_dorm_info
-    from transformers import pipeline  # NLP model for flexible feature matching
+    import json
+    
 
     ### === STEP 1: SCRAPE ALL RESIDENCE HALL LINKS === ###
     BASE_URL = "https://housing.utexas.edu/housing/residence-halls/residence-hall-locations"
@@ -27,17 +28,52 @@ def ut_prediction(user_occupants, user_bathroom, user_price, user_amenities):
     #user_bathroom = input("Preferred bathroom type (Private, Shared, Community, etc.): ").strip()
     #user_price = float(input("Maximum price you are willing to pay: ").strip())
     #user_amenities = input("Preferred amenities/features (comma-separated): ").strip().lower().split(", ")
+    user_occupants = int(str(user_occupants).strip())
+    user_bathroom = user_bathroom.strip()
+    user_price = float(str(user_price).strip())
+    user_amenities = user_amenities.strip().lower().split(", ")
+    if user_occupants == 1:
+        user_occupants = "One Occupant"
+    elif user_occupants == 2:
+        user_occupants = "Two Occupant(s)"
+    elif user_occupants == 3:
+        user_occupants = "Three Occupant(s)"
+    elif user_occupants == 4:
+        user_occupants = "Four Occupant(s)"
+
+    if user_bathroom == "One Private":
+        user_bathroom = "One Bathroom (Private)"
+    if user_bathroom == "One Connecting":
+        user_bathroom = "One Bathroom (Connecting)"
+    if user_bathroom == "Two Private":
+        user_bathroom = "Two Bathrooms (Private)"
 
     ### === STEP 3: SCRAPE & EXTRACT ROOM DETAILS FOR ALL HALLS === ###
+    
+
     class Room:
-        def __init__(self, hall, title, occupants, bathroom, price, amenities):
+        def __init__(self, hall, title, occupants, bathroom, price, amenities, tour_available, tour_link):
             self.hall = hall
             self.title = title
             self.occupants = occupants
             self.bathroom = bathroom
             self.price = price
             self.amenities = amenities
+            self.tour_available = tour_available
+            self.tour_link = tour_link
 
+        def to_dict(self):
+            """Convert the Room object to a dictionary for JSON serialization."""
+            return {
+                "hall": self.hall,
+                "title": self.title,
+                "occupants": self.occupants,
+                "bathroom": self.bathroom,
+                "price": self.price,
+                "amenities": self.amenities,
+                "tour_available": self.tour_available,
+                "tour_link":self.tour_link
+            }
         def __repr__(self):
             return f"{self.hall} | {self.title} | {self.occupants} | {self.bathroom} | ${self.price} | Amenities: {', '.join(self.amenities)}"
 
@@ -50,25 +86,46 @@ def ut_prediction(user_occupants, user_bathroom, user_price, user_amenities):
 
         # Extract all room details
         room_types = hall_soup.findAll("article", attrs={"class": "node node--type-utprop-property-space node--view-mode-utprop-alt-1"})
-        room_details = [room.text.replace("\n", " ").replace("*", "").strip() for room in room_types if "$" in room.text]
+        
+        for room in room_types:
+            room_text = room.text.replace("\n", " ").replace("*", "").strip()
+            
+            # Check if the room text contains a price
+            if "$" not in room_text:
+                continue  # Skip rooms without pricing info
 
-        # Extract amenities
-        amenities_list = [
-            amenity.get_text(strip=True).lower()
-            for amenity in hall_soup.findAll("li", attrs={"class": "field__item field-node-utprop-property__item"})
-            if amenity.get_text(strip=True)
-        ]
-
-        for room_text in room_details:
             room_text = re.sub(r'(?<=[a-z])([A-Z])', r' \1', room_text)  # Add spaces before capital letters
             extracted_info = extract_dorm_info(room_text).split(", ")
 
-            if len(extracted_info) == 4:
-                title, occupants, bathroom, price = extracted_info
-                price = float(price)  # Convert price to float for comparison
-                all_rooms.append(Room(hall, title, occupants, bathroom, price, amenities_list))
+            # Extract amenities
+            amenities_list = [
+                amenity.get_text(strip=True).lower()
+                for amenity in hall_soup.findAll("li", attrs={"class": "field__item field-node-utprop-property__item"})
+                if amenity.get_text(strip=True)
+            ]
 
-    print(f"\n✅ Extracted {len(all_rooms)} rooms across all halls!")
+            # Extract 3D Tour link (if available)
+            tour_link_tag = room.find("span", class_="field__item field-node-utprop-property-space__item")
+            
+            tour_link = None
+
+            
+
+            # Check if extracted info is valid
+            if len(extracted_info) == 5:  # Only expecting title, occupants, bathroom, price
+                title, occupants, bathroom, price, tour_available = extracted_info
+                if "Premium Single                            3D tour       One Occupant   Community Bath" in title:
+                    title = "Premium Single"
+                if tour_link_tag:
+                    tour_a_tag = tour_link_tag.find("a")
+                    if tour_available:
+                        tour_link = tour_a_tag.get("href")
+                price = float(price)  # Convert price to float for comparison
+                all_rooms.append(Room(hall, title, occupants, bathroom, price, amenities_list, tour_available, tour_link))
+                print(f"✅ Found: {title} | {occupants} | {bathroom} | ${price} | Tour: {'Available' if tour_available else 'Not Available'} | Link: {tour_link}")
+
+
+
 
     ### === STEP 4: FILTER ROOMS BASED ON USER PREFERENCES === ###
     # Initialize NLP model for similarity checking (Mistral-7B Instruct for better results)
@@ -76,14 +133,32 @@ def ut_prediction(user_occupants, user_bathroom, user_price, user_amenities):
     # Load the zero-shot classification model
     # Load the zero-shot classification model
     from fuzzywuzzy import fuzz  # Faster string similarity matching
+    def convert_occupants_to_number(occupants_str):
+        """Convert occupant descriptions into a standardized integer format."""
+        occupants_mapping = {
+            "One Occupant":1, "Two Occupant(s)": 2, "Three Occupant(s)": 3, "Four Occupant(s)": 4
+        }
+        
+        words = occupants_str.lower().split()
+        
+        # Check for word-based numbers first
+        for word in words:
+            if word in occupants_mapping:
+                return occupants_mapping[word]
+        
+        # Check if there's a numeric value in the string
+        numbers = [int(s) for s in words if s.isdigit()]
+        return numbers[0] if numbers else None  # Return first found number, else None
 
     def rate_room(room, strict_occupants, strict_bathroom, max_price, preferred_amenities):
         """Rate a room on a 100-point scale for precise scoring and convert to 5-star scale."""
         
         rating = 0  # Base rating (will increment)
+        
+        
 
         ### STRICT MATCHING (High Importance)
-        if strict_occupants.lower() in room.occupants.lower():
+        if room.occupants == strict_occupants:
             rating += 40  # ✅ +40 points if occupants match exactly
         else:
             return 0  # 🚫 Completely reject the room if occupants don't match
@@ -125,23 +200,41 @@ def ut_prediction(user_occupants, user_bathroom, user_price, user_amenities):
         for room in all_rooms
     ]
 
-    # Remove rooms that got a 0-star rating (didn't pass strict filtering)
-    rated_rooms = [room for room in rated_rooms if room[1] > 0]
+    # Capitalize the first letter of each amenity AFTER rating
+    for room, rating in rated_rooms:
+        if hasattr(room, "amenities"):  # Ensure `room` has `amenities` attribute
+            room.amenities = [amenity.capitalize() for amenity in room.amenities]
 
-    # Sort by highest rating
+
+
+    # Remove rooms that got a 0-star rating (didn't pass strict filtering)
+    # Sort while still in tuple format
     rated_rooms.sort(key=lambda x: x[1], reverse=True)
-    top_3_rooms = rated_rooms[:3]
-    top_10_rooms = rated_rooms[:10]
+
+    # Convert after sorting
+    rated_rooms_json = [{"room": room.to_dict(), "rating": rating} for room, rating in rated_rooms if rating > 0]
+
+    # Convert full list to JSON string
+    top_3_rooms = rated_rooms_json[:3]
+
+    # Convert to JSON
+    json_top_3 = json.dumps(top_3_rooms, indent=4)
+    top_10_rooms = rated_rooms_json[:10]
+
+# Convert to JSON
+    json_top_10 = json.dumps(top_10_rooms, indent=4)
     # Display Top Rated Dorms
     if top_3_rooms:
         print("\n🏠 **Top Rated Dorm Rooms for You:**")
+        print(top_3_rooms)
         
         for room, stars in top_3_rooms:
             print(f"⭐️ {stars}/5 | {room}")
-        return top_3_rooms, top_10_rooms
+        return json_top_3, json_top_10
         
     else:
         print("\n⚠️ No matching dorms found. Try adjusting your filters!")
+        print(user_occupants, user_bathroom, user_price, user_amenities, tour_available, tour_link)
         return "None", "None"
 
     print("\nℹ️ *Information may not be 100% accurate, please check your college website for more accurate details.*")
