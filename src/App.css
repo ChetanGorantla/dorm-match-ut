@@ -262,4 +262,7 @@ textarea:focus {
       padding: 8px 16px;
       font-size: 0.9rem;
   }
+  .total-container{
+    margin-bottom: 100px;
+  }
 }
