@@ -12,3 +12,5 @@ Hi! I'm Chetan Gorantla, the developer of DormMatch. I'm a high school senior (l
 ## Contact
 Feel free to check out [DormMatch](https://www.dormmatch.net) and let me know your thoughts! Reach out to chetangorantla7@gmail.com with any questions.
 Futher development may continue to expand the reach to more college campuses, like Texas A&M, UMICH, UIUC, etc.
+
+*NOT AFFILIATED WITH UT AUSTIN*
