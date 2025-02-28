@@ -1,5 +1,5 @@
 # **Dorm Match** 🎓🏠  
-*A React + Vite Web App for Dorm Matching*  
+*A React + Vite Web App for Dorm Matching*  a
 
 This project is built using **React** and **Vite**, providing a fast development environment with hot module replacement (HMR) and optimized performance.  
 
