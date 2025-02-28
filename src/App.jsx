@@ -18,7 +18,8 @@ function App() {
   const [top10, setTop10] = useState(null);
   const [loading, setLoading] = useState(false);  // ✅ Loading state
 
-  const API_URL = "http://127.0.0.1:8000";  // ✅ Local FastAPI server
+  const API_BASE_URL = process.env.VITE_API_LINK;
+
 
   // Handles the change in Number of Occupants slider
 const handleOccupantChange = (event) => {
@@ -66,7 +67,7 @@ const handleAccommodationChange = (event) => {
         fourth: accommodation
     };
 
-    fetch("http://localhost:5000/api/data", {
+    fetch("${API_BASE_URL}/api/data", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestData)
