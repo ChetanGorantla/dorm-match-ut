@@ -96,7 +96,7 @@ const handleAccommodationChange = (event) => {
 
   return (
     <>
-      <a href="https://github.com/your-repo" target="_blank" rel="noopener noreferrer" className="github-link">
+      <a href="https://github.com/ChetanGorantla/dorm-match-ut" target="_blank" rel="noopener noreferrer" className="github-link">
           <img src="https://cdn-icons-png.flaticon.com/256/25/25231.png" alt="GitHub" className="github-icon" />
       </a>
 
