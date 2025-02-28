@@ -18,7 +18,7 @@ function App() {
   const [top10, setTop10] = useState(null);
   const [loading, setLoading] = useState(false);  // ✅ Loading state
 
-  const API_BASE_URL = process.env.VITE_API_LINK;
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 
   // Handles the change in Number of Occupants slider
@@ -67,7 +67,7 @@ const handleAccommodationChange = (event) => {
         fourth: accommodation
     };
 
-    fetch("${API_BASE_URL}/api/data", {
+    fetch(`${API_BASE_URL}/api/data`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestData)

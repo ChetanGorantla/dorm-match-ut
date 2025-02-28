@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from utaustin import ut_prediction
+from src.utaustin import ut_prediction  # If inside src/
+
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend access
