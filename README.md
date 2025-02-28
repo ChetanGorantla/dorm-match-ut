@@ -1,7 +1,7 @@
 # [DormMatch](https://www.dormmatch.net) 
-![DormMatch Logo](https://cdn-icons-png.flaticon.com/512/8758/8758581.png)
+![DormMatch Logo](https://static-00.iconduck.com/assets.00/house-with-garden-emoji-512x512-ffw9splg.png)
 
-## About PureChem
+## About DormMatch
 Hi! I'm Chetan Gorantla, the developer of DormMatch. I'm a high school senior (likely attending UT Austin for Computer Science in the fall) passionate about CS, and I built this website to help incoming freshmen at the University of Texas at Austin. **DormMatch** is designed to assist students in choosing a dorm/residence hall that fits them best. My goal is to make choosing your on-campus housing easy, so I hope you find my website useful!
 
 ## Features
