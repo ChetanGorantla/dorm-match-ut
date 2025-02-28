@@ -3,7 +3,7 @@ def ut_prediction(user_occupants, user_bathroom, user_price, user_amenities):
     from bs4 import BeautifulSoup
     import requests
     import re
-    from regex import extract_dorm_info
+    from src.regex import extract_dorm_info
     import json
     
 
