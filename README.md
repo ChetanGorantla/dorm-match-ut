@@ -10,8 +10,9 @@ This project is built using **React** and **Vite**, providing a fast development
 
 ## **Features**  
 ✅ Fast and efficient dorm matching  
-✅ User-friendly interface  
 ✅ Algorithmic approach to ranking
+✅ User-friendly interface  
+
 
 
 *NOT AFFILIATED WITH THE UNIVERSITY OF TEXAS AT AUSTIN*
