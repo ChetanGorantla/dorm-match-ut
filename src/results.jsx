@@ -20,10 +20,27 @@ const DormResults = ({ top3, top10 }) => {
     const additionalResults = top10.slice(3);
 
     return (
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "10px", position: "relative", marginBottom:60 }}>
+        <div style={{
+            width: "100%",
+            maxWidth: "500px",
+            margin: "auto",
+            padding: "10px",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "15px",
+            marginBottom: 60
+        }}>
             <h2>Top 3 Dorms</h2>
             {top3?.map((item, index) => (
-                <div key={index} style={{ display: "flex", alignItems: "center", gap: "10px", position: "relative", justifyContent:"center",}}>
+                <div key={index} style={{ 
+                    display: "flex", 
+                    alignItems: "center", 
+                    justifyContent: "space-between", 
+                    gap: "5px", 
+                    width: "100%", 
+                    flexWrap: "wrap"
+                }}>
                     {/* Dorm name */}
                     <span
                         onClick={() => handleRoomClick(item)}
@@ -133,10 +150,25 @@ const DormResults = ({ top3, top10 }) => {
 
             {/* Show Additional Results */}
             {showMore && (
-                <div style={{ marginTop: "10px" }}>
+                <div style={{
+                    width: "100%",
+                    maxWidth: "800px",
+                    margin: "auto",
+                    padding: "10px",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: "15px"}}>
                     <h3>Additional Dorms</h3>
                     {additionalResults.map((item, index) => (
-                        <div key={index} style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "90%", justifyContent: "center" }}>
+                        <div key={index} style={{ 
+                            display: "flex", 
+                            alignItems: "center", 
+                            justifyContent: "space-between", 
+                            gap: "5px", 
+                            width: "100%", 
+                            flexWrap: "wrap"
+                        }}>
                             <span
                                 onClick={() => handleRoomClick(item)}
                                 style={{

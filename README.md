@@ -20,5 +20,5 @@ git clone https://github.com/yourusername/dorm-match.git
 cd dorm-match  
 npm install  
 npm run dev  
-
+```
 *NOT AFFILIATED WITH THE UNIVERSITY OF TEXAS AT AUSTIN*

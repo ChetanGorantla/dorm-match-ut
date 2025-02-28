@@ -11,7 +11,7 @@ export default function SegmentedSlider({ value, setValue }) { // Use props here
   };
 
   return (
-    <div style={{ width: "300px", marginTop: "35px", textAlign: "center", position: "relative" }}>
+    <div style={{ width: "90%", maxWidth: "300px", margin: "auto", position: "relative" }}>
       {/* Dynamic Value Display Above the Thumb */}
       <div
         style={{
@@ -37,7 +37,14 @@ export default function SegmentedSlider({ value, setValue }) { // Use props here
         step="1"
         value={value} // Use prop value
         onChange={(e) => setValue(Number(e.target.value))} // Use prop setValue
-        style={{ width: "100%", position: "relative", zIndex: "1" }}
+        style={{
+          width: "100%",
+          
+          
+          borderRadius: "5px",
+          cursor: "pointer",
+          height: "10px",
+        }}
       />
     </div>
   );
