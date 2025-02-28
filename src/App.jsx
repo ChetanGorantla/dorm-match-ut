@@ -117,7 +117,7 @@ const handleAccommodationChange = (event) => {
         
           <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
             {/* Left Side */}
-            <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+            <div className = "left-section" style={{ flex: 1, display: "flex", flexDirection: "column" }}>
               <div>
                 <div style={{ display: "flex", justifyContent: "center", alignItems:"center", marginTop: "0px" }}>
                   Number of Occupants
@@ -139,6 +139,7 @@ const handleAccommodationChange = (event) => {
                 <div style={{ display: "flex", justifyContent: "center", alignItems:"center", marginTop: "10px"}}>
                   Budget
                   <input
+                    className = "budget-input"
                     type="text"
                     value={selectedBudget}
                     onChange={handleBudgetChange}
@@ -157,7 +158,7 @@ const handleAccommodationChange = (event) => {
             </div>
 
             {/* Right Side */}
-            <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+            <div className = "right-section" style={{ flex: 1, display: "flex", flexDirection: "column" }}>
               <LongTextInput text={accommodation} setText={setAccommodation}/>
             </div>
         </div>
