@@ -1,18 +1,14 @@
-# **Dorm Match** 🎓🏠  
-*A React + Vite Web App for Dorm Matching*  a
+# [DormMatch](https://www.dormmatch.net) 
+![DormMatch Logo](https://cdn-icons-png.flaticon.com/512/8758/8758581.png)
 
-This project is built using **React** and **Vite**, providing a fast development environment with hot module replacement (HMR) and optimized performance.  
+## About PureChem
+Hi! I'm Chetan Gorantla, the developer of DormMatch. I'm a high school senior (likely attending UT Austin for Computer Science in the fall) passionate about CS, and I built this website to help incoming freshmen at the University of Texas at Austin. **DormMatch** is designed to assist students in choosing a dorm/residence hall that fits them best. My goal is to make choosing your on-campus housing easy, so I hope you find my website useful!
 
-## **Tech Stack**  
-- **Frontend:** React + Vite  
-- **Backend:** Flask, RestAPI
-- **Deployment:** Frontend on [Vercel](https://vercel.com/), Backend on [Heroku](https://www.heroku.com/)  
+## Features
+- **Web Scraping Data Extraction**: Used BeautifulSoup to retrieve relevant data from the UT Austin housing page.
+- **Dorm Rating System**: Determine a score that each dorm recieves based on your inputted necessities/amenities.
+- **Fuzzy Matching**: Predicts which dorm provisions align best with your amenities requested.
 
-## **Features**  
-✅ Fast and efficient dorm matching  
-✅ Algorithmic approach to ranking
-✅ User-friendly interface  
-
-
-
-*NOT AFFILIATED WITH THE UNIVERSITY OF TEXAS AT AUSTIN*
+## Contact
+Feel free to check out [DormMatch](https://www.dormmatch.net) and let me know your thoughts! Reach out to chetangorantla7@gmail.com with any questions.
+Futher development may continue to expand the reach to more college campuses, like Texas A&M, UMICH, UIUC, etc.
