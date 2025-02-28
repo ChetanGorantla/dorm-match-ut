@@ -79,7 +79,7 @@ const handleAccommodationChange = (event) => {
         return response.json();  // Convert to JSON
     })
     .then(data => {
-        console.log("Response from server:", data);
+        //console.log("Response from server:", data);
 
         let t3 = data.received.top3;
         let t10 = data.received.top10;
