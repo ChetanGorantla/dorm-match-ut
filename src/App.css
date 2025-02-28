@@ -59,7 +59,12 @@ select option {
 }
 
 
-
+.total-container{
+  max-width: 100%;
+  width:100%;
+  margin: auto;
+  
+}
 /* Change slider color */
 input[type="range"] {
   accent-color: #BF5700; /* Burnt Orange */
@@ -241,4 +246,20 @@ textarea:focus {
   position: fixed; /* Sticks to bottom */
   bottom: 0;
   left: 0;
+}
+
+@media (max-width: 600px) {
+  .container {
+      width: 95%;
+      padding: 10px;
+  }
+  
+  .title {
+      font-size: 4vw;
+  }
+  
+  .button {
+      padding: 8px 16px;
+      font-size: 0.9rem;
+  }
 }

@@ -97,8 +97,9 @@ const handleAccommodationChange = (event) => {
   };
 
   return (
-    <>
-    <Analytics/>
+    <div className = "total-container" style = {{}}>
+      <Analytics/>
+
       <a href="https://github.com/ChetanGorantla/dorm-match-ut" target="_blank" rel="noopener noreferrer" className="github-link">
           <img src="https://cdn-icons-png.flaticon.com/256/25/25231.png" alt="GitHub" className="github-icon" />
       </a>
@@ -200,7 +201,7 @@ const handleAccommodationChange = (event) => {
           <p>Ratings may vary per person. Please refer to the official UT housing website for more details.</p>
       </footer>
 
-    </>
+    </div>
   );
 }
 
