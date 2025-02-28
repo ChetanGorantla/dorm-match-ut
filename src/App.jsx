@@ -7,6 +7,7 @@ import TrueSlider from './TrueSlider'
 import LongTextInput from './LongTextInput'
 import axios from 'axios';
 import DormResults from './results'
+import { Analytics } from "@vercel/analytics/react"
 
 function App() {
   const [selectedOccupants, updateOccupants] = useState(1);
@@ -97,6 +98,7 @@ const handleAccommodationChange = (event) => {
 
   return (
     <>
+    <Analytics/>
       <a href="https://github.com/ChetanGorantla/dorm-match-ut" target="_blank" rel="noopener noreferrer" className="github-link">
           <img src="https://cdn-icons-png.flaticon.com/256/25/25231.png" alt="GitHub" className="github-icon" />
       </a>
